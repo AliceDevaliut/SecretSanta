@@ -1,0 +1,516 @@
+openapi: 3.0.0
+info:
+  title: API Тайный Санта
+  version: 1.0.0
+  description: |
+    Автоматизация рождественских подарков: управление мероприятиями, 
+    участниками, жеребьёвкой и уведомлениями.
+
+servers:
+  - url: https://api.santa.example.com
+    description: Production server
+
+paths:
+  # ===================== Мероприятия (Events) =====================
+  /events:
+    post:
+      summary: Создать новое мероприятие
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventCreate'
+      responses:
+        201:
+          description: Мероприятие создано
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+
+  /events/{eventId}:
+    get:
+      summary: Получить информацию о мероприятии
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Информация о мероприятии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+    delete:
+      summary: Удалить мероприятие
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        204:
+          description: Мероприятие удалено
+
+  # ===================== Участники (Participants) =====================
+  /events/{eventId}/participants:
+    post:
+      summary: Добавить участника в мероприятие
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParticipantCreate'
+      responses:
+        201:
+          description: Участник добавлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Participant'
+    get:
+      summary: Получить список участников мероприятия
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Список участников
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Participant'
+
+  /events/{eventId}/participants/{userId}:
+    delete:
+      summary: Удалить участника из мероприятия
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        204:
+          description: Участник удалён
+
+  # ===================== Запрещённые пары (Exclusions) =====================
+  /events/{eventId}/exclusions:
+    post:
+      summary: Добавить запрещённую пару
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Exclusion'
+      responses:
+        201:
+          description: Запрещённая пара добавлена
+    get:
+      summary: Получить список запрещённых пар
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Список запрещённых пар
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Exclusion'
+
+  # ===================== Жеребьёвка (Draw) =====================
+  /events/{eventId}/draw:
+    post:
+      summary: Запустить автоматическую жеребьёвку
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Результаты жеребьёвки
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DrawResult'
+    patch:
+      summary: Ручная корректировка пар
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Pair'
+
+  # ===================== Вишлисты (Wishlists) =====================
+  /participants/{userId}/wishlist:
+    put:
+      summary: Обновить вишлист участника
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Wishlist'
+      responses:
+        200:
+          description: Вишлист обновлён
+    get:
+      summary: Получить вишлист участника
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Данные вишлиста
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Wishlist'
+
+  # ===================== Уведомления (Notifications) =====================
+  /events/{eventId}/notify:
+    post:
+      summary: Отправить уведомления участникам
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Notification'
+
+  # ===================== Статус подарков (Gift Status) =====================
+  /participants/{userId}/gift-status:
+    patch:
+      summary: Обновить статус подарка
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GiftStatus'
+      responses:
+        200:
+          description: Статус обновлён
+
+  /events/{eventId}/gift-status:
+    get:
+      summary: Получить статусы дарения по мероприятию
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Статусы участников
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ParticipantStatus'
+
+  # ===================== Приглашения (Invitations) =====================
+  /events/{eventId}/invite:
+    post:
+      summary: Сгенерировать ссылку приглашения
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Ссылка создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvitationLink'
+
+  /invitations/{code}/accept:
+    post:
+      summary: Принять приглашение
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParticipantCreate'
+      responses:
+        201:
+          description: Приглашение принято
+
+  # ===================== Личный кабинет (Dashboard) =====================
+  /participants/{userId}/dashboard:
+    get:
+      summary: Данные для личного кабинета участника
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Данные кабинета
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dashboard'
+
+  /organizers/{userId}/events:
+    get:
+      summary: Список мероприятий организатора
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Список мероприятий
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
+
+components:
+  schemas:
+    # ======== Основные модели ========
+    EventCreate:
+      type: object
+      required: [name, date]
+      properties:
+        name:
+          type: string
+          example: "Новогодний корпоратив"
+        date:
+          type: string
+          format: date
+          example: "2025-12-20"
+        budget:
+          type: number
+          example: 5000
+
+    Event:
+      allOf:
+        - $ref: '#/components/schemas/EventCreate'
+        - type: object
+          properties:
+            id:
+              type: string
+              example: "event_123"
+            status:
+              type: string
+              enum: [created, started, completed]
+              example: "created"
+
+    ParticipantCreate:
+      type: object
+      required: [name, email]
+      properties:
+        name:
+          type: string
+          example: "Иван Петров"
+        email:
+          type: string
+          format: email
+          example: "ivan@example.com"
+        telegram:
+          type: string
+          example: "@ivan_petrov"
+
+    Participant:
+      allOf:
+        - $ref: '#/components/schemas/ParticipantCreate'
+        - type: object
+          properties:
+            id:
+              type: string
+              example: "user_456"
+
+    Exclusion:
+      type: object
+      required: [user1Id, user2Id]
+      properties:
+        user1Id:
+          type: string
+          example: "user_123"
+        user2Id:
+          type: string
+          example: "user_456"
+
+    DrawResult:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "success"
+        pairs:
+          type: array
+          items:
+            $ref: '#/components/schemas/Pair'
+
+    Pair:
+      type: object
+      properties:
+        santa:
+          type: string
+          example: "user_123"
+        receiver:
+          type: string
+          example: "user_789"
+
+    Wishlist:
+      type: object
+      properties:
+        wishes:
+          type: array
+          items:
+            type: string
+          example: ["Книга", "Наушники"]
+        hobbies:
+          type: string
+          example: "Путешествия"
+
+    Notification:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [draw_results, reminder]
+          example: "draw_results"
+        message:
+          type: string
+          example: "Вы дарите подарок Ольге!"
+
+    GiftStatus:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [pending, sent, received]
+          example: "sent"
+
+    ParticipantStatus:
+      type: object
+      properties:
+        participant:
+          type: string
+          example: "Иван Петров"
+        status:
+          type: string
+          example: "sent"
+
+    InvitationLink:
+      type: object
+      properties:
+        inviteUrl:
+          type: string
+          format: uri
+          example: "https://santa.example.com/join/abc123"
+
+    Dashboard:
+      type: object
+      properties:
+        event:
+          type: string
+          example: "Новый Год 2025"
+        receiver:
+          type: string
+          example: "Ольга Иванова"
+        receiverWishlist:
+          type: array
+          items:
+            type: string
+          example: ["Книги", "Шоколад"]
+        giftStatus:
+          type: string
+          example: "sent"
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - BearerAuth: []
