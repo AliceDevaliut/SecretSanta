@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Entities
 {
-   public class Notification
+   public class NotificationEntity
     {
         public Guid Id { get; set; }
 
@@ -18,6 +18,6 @@ namespace Domain.Entities
 
         public bool Status { get; set; }
 
-        public DateTime sent { get; set; }
+        public DateTime Sent { get; set; }
     }
 }

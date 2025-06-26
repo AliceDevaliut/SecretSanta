@@ -6,18 +6,14 @@ using System.Threading.Tasks;
 
 namespace Domain.Entities
 {
-   public class Event
+    public class DrawEntity
     {
         public Guid Id { get; set; }
 
-        public string Name { get; set; }
+        public Guid EventId { get; set; }
 
-        public DateTime StartDate { get; set; }
+        public Guid GiverId { get; set; }
 
-        public DateTime EndDate { get; set; }
-
-        
-
-
+        public Guid ReceiverId { get; set; }
     }
 }
