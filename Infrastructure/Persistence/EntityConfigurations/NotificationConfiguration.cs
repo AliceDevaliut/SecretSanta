@@ -11,19 +11,19 @@ public class NotificationConfiguration : IEntityTypeConfiguration<NotificationEn
 {
     public void Configure(EntityTypeBuilder<NotificationEntity> builder)
     {
-
+        builder.ToTable("Notification");
 
         builder.HasKey(t => t.Id);
 
-        builder.Property(t => t.EventId);
+        builder.Property(t => t.EventId).HasColumnName("Event_Id");
 
-        builder.Property(t => t.UserId);
+        builder.Property(t => t.UserId).HasColumnName("User_Id");
 
-        builder.Property(t => t.NotificationType );
+        builder.Property(t => t.NotificationType).HasColumnName("Notification_Type");
         
-        builder.Property(t => t.Status );
+        builder.Property(t => t.Status).HasColumnName("Status");
         
-        builder.Property(t => t.Sent);
+        builder.Property(t => t.Sent).HasColumnName("Sent");
 
 
 

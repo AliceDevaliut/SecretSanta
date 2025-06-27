@@ -21,7 +21,7 @@ public class SantaDbContext : DbContext
 
     public void Migrate()
     {
-     //   Database.Migrate();
+        Database.Migrate();
     }
     protected override void OnConfiguring(DbContextOptionsBuilder options)
     {
