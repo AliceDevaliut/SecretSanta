@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Infrastructure;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TemplateService.Infrastructure.Persistence;
 using TemplateService.Infrastructure.Persistence.Providers.Postgresql;
@@ -12,8 +14,9 @@ public static class ServiceCollectionExtension
         if (services == null)
             throw new ArgumentNullException(nameof(services));
 
-        services.AddDbContext<TemplatePostgresqlDbContext>();
-        services.AddScoped<SantaDbContext>(provider => provider.GetRequiredService<TemplatePostgresqlDbContext>());
+        services.AddDbContext<TemplatePostgresqlDbContext>(options => options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+
+        services.AddScoped<IContext>(provider => provider.GetService<TemplatePostgresqlDbContext>());
 
         return services;
     }

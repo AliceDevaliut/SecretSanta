@@ -15,9 +15,9 @@ public class NotificationConfiguration : IEntityTypeConfiguration<NotificationEn
 
         builder.HasKey(t => t.Id);
 
-        builder.Property(t => t.EventId).HasColumnName("Event_Id");
+        builder.HasIndex(t => t.EventId).HasDatabaseName("EventId_Index");
 
-        builder.Property(t => t.UserId).HasColumnName("User_Id");
+        builder.HasIndex(t => t.UserId).HasDatabaseName("UserId_Index");
 
         builder.Property(t => t.NotificationType).HasColumnName("Notification_Type");
         

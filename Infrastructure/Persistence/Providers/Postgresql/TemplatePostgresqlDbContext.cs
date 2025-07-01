@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Npgsql;
+using System.Diagnostics;
 
 namespace TemplateService.Infrastructure.Persistence.Providers.Postgresql;
 
@@ -15,20 +17,13 @@ public class TemplatePostgresqlDbContext : SantaDbContext
     {
         _configuration = configuration;
     }
-
     protected override void OnConfiguring(DbContextOptionsBuilder options)
     {
         base.OnConfiguring(options);
-
-        var conStrBuilder = new NpgsqlConnectionStringBuilder(_configuration.GetConnectionString("TemplatePostgreSqlDatabase"))
-        {
-            //Password = _configuration.GetValue<string>("DbPassword")
-        };
-
-        options.UseNpgsql(conStrBuilder.ConnectionString, opt =>
-        {
-            opt.MigrationsHistoryTable("TMP_EFMigrationsHistory", _defaultSchema);
-        });
+        options.UseNpgsql(_configuration.GetConnectionString("DefaultConnection"))
+            .EnableSensitiveDataLogging()
+            .EnableDetailedErrors()
+            .LogTo(message => Debug.WriteLine(message), LogLevel.Information);
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

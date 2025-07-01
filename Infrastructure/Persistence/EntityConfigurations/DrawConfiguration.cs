@@ -11,12 +11,15 @@ class DrawConfiguration : IEntityTypeConfiguration<DrawEntity>
     {
         builder.ToTable("Draw");
 
+        
         builder.HasKey(t => t.Id);
 
-        builder.Property(t => t.EventId).HasColumnName("Event_Id");
+        builder.HasIndex(t => t.EventId).HasDatabaseName("EventId_Index");
 
-        builder.Property(t => t.GiverId).HasColumnName("Giver_Id");
+        builder.HasIndex(t => t.GiverId).HasDatabaseName("GiverId_Index");
 
-        builder.Property(t => t.ReceiverId).HasColumnName("Receiver_Id");
+        builder.HasIndex(t => t.ReceiverId).HasDatabaseName("ReceiverId_Index");
+
+       
     }
 }

@@ -1,8 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Domain.Entities;
+using Infrastructure;
+
 namespace TemplateService.Infrastructure.Persistence;
 
-public class SantaDbContext : DbContext
+public class SantaDbContext : DbContext, IContext
 {
     protected readonly string _defaultSchema = "santa";
 
@@ -37,5 +39,15 @@ public class SantaDbContext : DbContext
     {
         return new DbContextOptionsBuilder<T>()
                     .Options;
+    }
+
+    void IContext.SaveChanges()
+    {
+        SaveChanges();
+    }
+
+    void IContext.SaveChangesAsync(CancellationToken cancellationToken)
+    {
+        SaveChangesAsync();
     }
 }
