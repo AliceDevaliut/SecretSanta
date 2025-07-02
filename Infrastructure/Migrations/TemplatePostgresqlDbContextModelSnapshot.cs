@@ -8,7 +8,7 @@ using TemplateService.Infrastructure.Persistence.Providers.Postgresql;
 
 #nullable disable
 
-namespace TemplateService.Infrastructure.Persistence.Providers.Postgresql.Migrations
+namespace Infrastructure.Migrations
 {
     [DbContext(typeof(TemplatePostgresqlDbContext))]
     partial class TemplatePostgresqlDbContextModelSnapshot : ModelSnapshot
@@ -17,7 +17,7 @@ namespace TemplateService.Infrastructure.Persistence.Providers.Postgresql.Migrat
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasDefaultSchema("santa")
+                .HasDefaultSchema("santa1")
                 .HasAnnotation("ProductVersion", "9.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
@@ -31,19 +31,32 @@ namespace TemplateService.Infrastructure.Persistence.Providers.Postgresql.Migrat
 
                     b.Property<Guid>("EventId")
                         .HasColumnType("uuid")
-                        .HasColumnName("Event_Id");
+                        .HasColumnName("EventId");
 
                     b.Property<Guid>("GiverId")
                         .HasColumnType("uuid")
-                        .HasColumnName("Giver_Id");
+                        .HasColumnName("GiverId");
 
                     b.Property<Guid>("ReceiverId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("Receiver_Id");
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("RecieverId")
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Draw", "santa");
+                    b.HasIndex("EventId")
+                        .HasDatabaseName("EventId_Index");
+
+                    b.HasIndex("GiverId")
+                        .HasDatabaseName("GiverId_Index");
+
+                    b.HasIndex("ReceiverId")
+                        .HasDatabaseName("ReceiverId_Index");
+
+                    b.HasIndex("RecieverId");
+
+                    b.ToTable("Draw", "santa1");
                 });
 
             modelBuilder.Entity("Domain.Entities.EventEntity", b =>
@@ -67,7 +80,7 @@ namespace TemplateService.Infrastructure.Persistence.Providers.Postgresql.Migrat
 
                     b.HasKey("Id");
 
-                    b.ToTable("Event", "santa");
+                    b.ToTable("Event", "santa1");
                 });
 
             modelBuilder.Entity("Domain.Entities.GiftEntity", b =>
@@ -83,11 +96,14 @@ namespace TemplateService.Infrastructure.Persistence.Providers.Postgresql.Migrat
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid")
-                        .HasColumnName("User_Id");
+                        .HasColumnName("UserId");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Gift", "santa");
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("UserId_Index");
+
+                    b.ToTable("Gift", "santa1");
                 });
 
             modelBuilder.Entity("Domain.Entities.NotificationEntity", b =>
@@ -98,7 +114,7 @@ namespace TemplateService.Infrastructure.Persistence.Providers.Postgresql.Migrat
 
                     b.Property<Guid>("EventId")
                         .HasColumnType("uuid")
-                        .HasColumnName("Event_Id");
+                        .HasColumnName("EventId");
 
                     b.Property<string>("NotificationType")
                         .IsRequired()
@@ -115,11 +131,11 @@ namespace TemplateService.Infrastructure.Persistence.Providers.Postgresql.Migrat
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid")
-                        .HasColumnName("User_Id");
+                        .HasColumnName("UserId");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Notification", "santa");
+                    b.ToTable("Notification", "santa1");
                 });
 
             modelBuilder.Entity("Domain.Entities.UserEntity", b =>
@@ -134,7 +150,8 @@ namespace TemplateService.Infrastructure.Persistence.Providers.Postgresql.Migrat
                         .HasColumnName("Email");
 
                     b.Property<Guid>("EventId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("EventId");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -157,9 +174,47 @@ namespace TemplateService.Infrastructure.Persistence.Providers.Postgresql.Migrat
                     b.HasKey("Id");
 
                     b.HasIndex("EventId")
+                        .IsUnique()
                         .HasDatabaseName("EventId_Index");
 
-                    b.ToTable("User", "santa");
+                    b.ToTable("User", "santa1");
+                });
+
+            modelBuilder.Entity("Domain.Entities.DrawEntity", b =>
+                {
+                    b.HasOne("Domain.Entities.UserEntity", "Giver")
+                        .WithMany()
+                        .HasForeignKey("GiverId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.UserEntity", "Reciever")
+                        .WithMany()
+                        .HasForeignKey("RecieverId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Giver");
+
+                    b.Navigation("Reciever");
+                });
+
+            modelBuilder.Entity("Domain.Entities.UserEntity", b =>
+                {
+                    b.HasOne("Domain.Entities.EventEntity", "Event")
+                        .WithOne("User")
+                        .HasForeignKey("Domain.Entities.UserEntity", "EventId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired()
+                        .HasConstraintName("FK_EventEntity_UserEntity");
+
+                    b.Navigation("Event");
+                });
+
+            modelBuilder.Entity("Domain.Entities.EventEntity", b =>
+                {
+                    b.Navigation("User")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

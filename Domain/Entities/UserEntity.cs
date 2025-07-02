@@ -12,8 +12,7 @@ namespace Domain.Entities
         public Guid Id { get; set; }
 
         public Guid EventId { get; set; }
-        public virtual EventEntity Event { get; }
-        
+
         public string Name { get; set; }
 
         public string Email { get; set; }
@@ -23,5 +22,7 @@ namespace Domain.Entities
         public string Wishlist { get; set; }
 
         public bool Role { get; set; }
+
+        public virtual EventEntity Event { get; }
     }
 }

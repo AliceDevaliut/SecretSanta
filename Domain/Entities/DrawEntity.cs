@@ -13,12 +13,16 @@ namespace Domain.Entities
        
         public Guid EventId { get; set; }
 
-        public virtual EventEntity Event { get; }
-
-       
+        
         public Guid GiverId { get; set; }
 
 
         public Guid ReceiverId { get; set; }
+
+        public virtual EventEntity Event { get; }
+
+        public virtual UserEntity Giver { get; set; }
+
+        public virtual UserEntity Reciever { get; set; }
     }
 }

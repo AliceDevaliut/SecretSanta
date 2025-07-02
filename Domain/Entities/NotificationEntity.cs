@@ -13,20 +13,16 @@ namespace Domain.Entities
        
         public Guid EventId { get; set; }
 
-        public virtual EventEntity Event { get; }
-
-       
         public Guid UserId { get; set; }
 
-        public virtual UserEntity User { get; }
-
-        
         public string NotificationType { get; set; }
 
-        
         public bool Status { get; set; }
 
-        
         public DateTime Sent { get; set; }
+
+        public virtual EventEntity Event { get; }
+
+        public virtual UserEntity User { get; }
     }
 }

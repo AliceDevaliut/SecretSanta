@@ -16,7 +16,7 @@ public class GiftConfiguration : IEntityTypeConfiguration<GiftEntity>
         builder.HasKey(t => t.Id);
 
         builder.HasIndex(t => t.UserId).HasDatabaseName("UserId_Index");
-
+        builder.Property(t => t.UserId).HasColumnName("UserId");
         builder.Property(t => t.Description).HasColumnName("Description");
 
        

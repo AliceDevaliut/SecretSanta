@@ -15,9 +15,11 @@ class DrawConfiguration : IEntityTypeConfiguration<DrawEntity>
         builder.HasKey(t => t.Id);
 
         builder.HasIndex(t => t.EventId).HasDatabaseName("EventId_Index");
-
         builder.HasIndex(t => t.GiverId).HasDatabaseName("GiverId_Index");
 
+        builder.Property(t => t.EventId).HasColumnName("EventId");
+
+        builder.Property(t => t.GiverId).HasColumnName("GiverId");
         builder.HasIndex(t => t.ReceiverId).HasDatabaseName("ReceiverId_Index");
 
        

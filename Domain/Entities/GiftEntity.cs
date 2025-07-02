@@ -6,13 +6,11 @@
 
         
         public Guid UserId { get; set; }
+                        
+        public string Description { get; set; }
 
         public virtual UserEntity User { get; }
 
-        
-        public string Description { get; set; }
 
-
-    
     }
 }

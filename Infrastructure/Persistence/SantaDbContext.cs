@@ -6,7 +6,7 @@ namespace TemplateService.Infrastructure.Persistence;
 
 public class SantaDbContext : DbContext, IContext
 {
-    protected readonly string _defaultSchema = "santa";
+    protected readonly string _defaultSchema = "santa1";
 
     public SantaDbContext(DbContextOptions<SantaDbContext> options)
         : base(options)

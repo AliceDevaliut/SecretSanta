@@ -16,8 +16,7 @@ namespace Domain.Entities
 
         public DateTime EndDate { get; set; }
 
-        
-
+        public virtual UserEntity User { get; set; }
 
     }
 }
