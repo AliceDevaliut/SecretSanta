@@ -63,8 +63,8 @@ async Task HandleErrorAsync(ITelegramBotClient client, Exception error, Cancella
     => await botHandlerUpdate.HandleErrorAsync(client, error, ct);
 
 // Получаем информацию о боте
-var me = await botClient.GetMeAsync();
+//var me = await botClient.GetMeAsync();
 
-app.Logger.LogInformation($"Telegram bot {me.FirstName} запущен");
+//app.Logger.LogInformation($"Telegram bot {me.FirstName} запущен");
 
 app.Run();
