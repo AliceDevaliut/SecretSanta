@@ -18,7 +18,7 @@ namespace WebApplication1.Controllers
         [HttpGet]
         [Produces(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(GetEventResponse))]
-        public async Task<IActionResult> GetItemByType([FromQuery] GetEventQuery query)
+        public async Task<IActionResult> GetEventByUserId([FromQuery] GetEventQuery query)
         {
             var respose = await _mediator.Send(query);
             return new JsonResult(respose);

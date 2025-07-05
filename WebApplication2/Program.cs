@@ -1,41 +1,43 @@
 using NotificationSender.Application;
+using OnlineShop.Application;
+using System.Reflection;
 using Telegram.Bot;
 using Telegram.Bot.Polling;
-using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using TemplateService.Infrastructure.Extensions;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddRazorPages();
-builder.Services.AddTemplateInfrastructure(builder.Configuration);
 
+builder.Services.AddControllers();
+builder.Services.AddTemplateInfrastructure(builder.Configuration);
+builder.Services.AddApplication();
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<ITelegramBotClient>(_ =>
     new TelegramBotClient(""));
 builder.Services.AddSingleton<ITelegramBotService, TelegramBotHandlers>();
 
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
-app.UseStaticFiles();
-
-app.UseRouting();
 
 app.UseAuthorization();
 
-app.MapRazorPages();
+app.MapControllers();
 
-// Запускаем Telegram бота
+// Telegram 
 var botClient = app.Services.GetRequiredService<ITelegramBotClient>();
 var botHandlerUpdate = app.Services.GetRequiredService<ITelegramBotService>();
 var lifetime = app.Services.GetRequiredService<IHostApplicationLifetime>();
@@ -55,16 +57,15 @@ botClient.StartReceiving(
     cancellationToken: lifetime.ApplicationStopping
 );
 
-// Локальные функции-адаптеры
+// 
 async Task HandleUpdateAsync(ITelegramBotClient client, Telegram.Bot.Types.Update update, CancellationToken ct)
     => await botHandlerUpdate.HandleUpdateAsync(client, update, ct);
 
 async Task HandleErrorAsync(ITelegramBotClient client, Exception error, CancellationToken ct)
     => await botHandlerUpdate.HandleErrorAsync(client, error, ct);
 
-// Получаем информацию о боте
+// 
 //var me = await botClient.GetMeAsync();
 
-//app.Logger.LogInformation($"Telegram bot {me.FirstName} запущен");
 
 app.Run();
